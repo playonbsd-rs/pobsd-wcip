@@ -1,2 +1,3 @@
 /target
 openbsd-games.db
+*.core
