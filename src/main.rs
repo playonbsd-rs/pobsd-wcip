@@ -68,7 +68,7 @@ fn main() -> Result<(), attohttpc::Error> {
             };
             println!("------------------------------------");
             println!(
-                " {}\n Hints: {}\n Install: steamctl depot download -a {}\n engine: {}\n runtime: {}\n url: {}",
+                " {}\n Hints: {}\n Install: steamctl depot download -a {} -o <PATH>\n engine: {}\n runtime: {}\n url: {}",
                 &game.name, hints, id, engine, runtime, store.url
             );
         }
