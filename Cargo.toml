@@ -1,5 +1,5 @@
 [package]
-name = "pobsd-wcip"
+name = "wcip"
 version = "0.1.0"
 edition = "2021"
 
