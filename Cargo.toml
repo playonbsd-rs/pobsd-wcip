@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 pobsd-parser = { path = "../pobsd-parser" }
 pobsd-db = { path = "../pobsd-db" }
+attohttpc = "0.24.1"
