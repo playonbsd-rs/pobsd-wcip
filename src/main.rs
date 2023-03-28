@@ -54,8 +54,25 @@ fn main() -> Result<(), attohttpc::Error> {
                 }
                 _ => panic!(),
             };
-            println!("{}: {}", &game.name, store.url);
+            let hints = match &game.hints {
+                Some(hints) => hints.into(),
+                None => String::from("None"),
+            };
+            let engine = match &game.engine {
+                Some(engine) => engine.into(),
+                None => String::from("N/A"),
+            };
+            let runtime = match &game.runtime {
+                Some(runtime) => runtime.into(),
+                None => String::from("N/A"),
+            };
+            println!("------------------------------------");
+            println!(
+                " {}\n Hints: {}\n Install: steamctl depot download -a {}\n engine: {}\n runtime: {}\n url: {}",
+                &game.name, hints, id, engine, runtime, store.url
+            );
         }
     }
+    println!("------------------------------------");
     Ok(())
 }
