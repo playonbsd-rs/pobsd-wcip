@@ -8,8 +8,8 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  OPENSSL_LIB_DIR: "/usr/lib/"
-  OPENSSL_INCLUDE_DIR: "/usr/include/"
+  OPENSSL_LIB_DIR: /usr/lib/x86_64-linux-gnu/
+  OPENSSL_INCLUDE_DIR: /usr/include/x86_64-linux-gnu/
 
 jobs:
   build:
