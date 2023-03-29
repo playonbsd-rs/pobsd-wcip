@@ -56,7 +56,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
                         .iter()
                         .filter(|a| a.store.eq(&Store::Steam))
                         .collect();
-                    // the get_game_by_steam_id uses stores entry
+                    // the get_game_by_steam_id uses store entries
                     // so there is for sure one steam store link
                     store
                         .get(0)

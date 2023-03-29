@@ -1,11 +1,18 @@
 [package]
 name = "wcip"
+description = "A small utility that list the games you own on Steam and can be played on OpenBSD"
+authors = ["Hukadan <me@hukadan.org>"]
 version = "0.1.0"
 edition = "2021"
+homepage = "https://github.com/playonbsd-rs/pobsd-wcip"
+documentation = "https://docs.rs/pobsd-wcip"
+license = "MIT"
+readme = "README.md"
+keywords = ["OpenBSD", "PlayOnBSD"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-pobsd-parser = { path = "../pobsd-parser" }
-pobsd-db = { path = "../pobsd-db" }
+pobsd-parser = "0.4.1"
+pobsd-db = "0.1.4"
 attohttpc = "0.24.1"
