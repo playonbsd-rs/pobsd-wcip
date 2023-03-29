@@ -8,6 +8,8 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  OPENSSL_LIB_DIR: "/usr/lib/"
+  OPENSSL_INCLUDE_DIR: "/usr/include/"
 
 jobs:
   build:
