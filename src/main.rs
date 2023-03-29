@@ -1,5 +1,7 @@
 use pobsd_db::GameDataBase;
 use pobsd_parser::{Parser, ParserResult, Store, StoreLink};
+use std::boxed::Box;
+use std::error;
 use std::process::Command;
 
 static DB_URL: &'static str = "https://raw.githubusercontent.com/Hukadan/OpenBSD-Games-Database/add-store-links/openbsd-games.db";
@@ -10,49 +12,61 @@ fn get_db() -> Result<String, attohttpc::Error> {
     Ok(content)
 }
 
-fn get_steam_ids() -> Vec<usize> {
-    let output = Command::new(STEAM_CTL)
-        .arg("apps")
-        .arg("list")
-        .output()
-        .expect("Failed to execute steamctl command");
+fn get_steamctl_output() -> Result<String, Box<dyn error::Error>> {
+    // grap steamctl output
+    let output = Command::new(STEAM_CTL).arg("apps").arg("list").output()?;
+    // convert the output to valid UTF-8
+    let output = std::str::from_utf8(&output.stdout)?.to_string();
+    Ok(output)
+}
 
-    let lines =
-        std::str::from_utf8(&output.stdout).expect("Failed to convert steamctl output to string");
+fn get_steam_ids() -> Result<Vec<usize>, Box<dyn error::Error>> {
     let mut ids: Vec<usize> = Vec::new();
-    for line in lines.lines() {
+    let output = get_steamctl_output()?;
+    for line in output.lines() {
+        // The element of the output are space separated
+        // the steam_id being the first element
         let element: Vec<&str> = line.split(" ").collect();
         // I guess it is ok if it fails for some ids
         if let Ok(id) = element[0].to_string().parse() {
-            ids.push(id)
+            ids.push(id);
         }
     }
-    ids
+    Ok(ids)
 }
 
-fn main() -> Result<(), attohttpc::Error> {
+fn main() -> Result<(), Box<dyn error::Error>> {
     let db = get_db()?;
     let parser = Parser::default();
     let games = match parser.load_from_string(&db) {
-        ParserResult::WithError(games, _) => games,
+        ParserResult::WithError(games, _) => {
+            eprintln!("A parsing error occured while parsing the PlayOnBSD database. Data might be imcomplete.");
+            games
+        }
         ParserResult::WithoutError(games) => games,
     };
     let db = GameDataBase::new(games);
-    let ids = get_steam_ids();
+    let ids = get_steam_ids()?;
     for id in ids {
         if let Some(game) = db.get_game_by_steam_id(id) {
             let store = match &game.stores {
                 Some(stores) => {
-                    let mut store = StoreLink::default();
-                    for st in stores.inner_ref() {
-                        if st.store.eq(&Store::Steam) {
-                            store = st.clone();
-                        }
-                    }
-
+                    let store: Vec<&StoreLink> = stores
+                        .inner_ref()
+                        .iter()
+                        .filter(|a| a.store.eq(&Store::Steam))
+                        .collect();
+                    // the get_game_by_steam_id uses stores entry
+                    // so there is for sure one steam store link
                     store
+                        .get(0)
+                        .expect("Expected at least one Steam store link, found none")
+                        .clone()
                 }
-                _ => panic!(),
+                // the get_game_by_steam_id uses stores entry
+                // therefore every game returned by the method
+                // should have at least of store link
+                _ => unreachable!(),
             };
             let hints = match &game.hints {
                 Some(hints) => hints.into(),
