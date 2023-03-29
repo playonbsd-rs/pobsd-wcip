@@ -1,3 +1,8 @@
+[![Build](https://github.com/playonbsd-rs/pobsd-wcip/actions/workflows/rust.yml/badge.svg)](https://github.com/playonbsd-rs/pobsd-wcip/actions/workflows/rust.yml)
+[![Clippy](https://github.com/playonbsd-rs/pobsd-wcip/actions/workflows/rust-clippy.yml/badge.svg)](https://github.com/playonbsd-rs/pobsd-wcip/actions/workflows/rust-clippy.yml)
+[![Crates.io (latest)](https://img.shields.io/crates/v/wcip?style=flat)](https://crates.io/crates/wcip)
+
+
 ## wcip (for What Can I Play)
 wcip is a small utility that compare the `steamctl apps list` output  and the PlayOnBSD
 database, and display the game you own that can be played on OpenBSD.
