@@ -1,3 +1,4 @@
+use pledge::pledge_promises;
 use pobsd_db::GameDataBase;
 use pobsd_parser::{Parser, ParserResult, Store, StoreLink};
 use std::boxed::Box;
@@ -13,6 +14,7 @@ fn get_db() -> Result<String, attohttpc::Error> {
 }
 
 fn get_steamctl_output() -> Result<String, Box<dyn error::Error>> {
+    eprintln!("Loading steam data. Please wait.");
     // grap steamctl output
     let output = Command::new(STEAM_CTL).arg("apps").arg("list").output()?;
     // convert the output to valid UTF-8
@@ -36,7 +38,17 @@ fn get_steam_ids() -> Result<Vec<usize>, Box<dyn error::Error>> {
 }
 
 fn main() -> Result<(), Box<dyn error::Error>> {
+    pledge_promises![Stdio Rpath Inet Dns Exec Proc Unveil]
+        .or_else(pledge::Error::ignore_platform)
+        .unwrap();
+    let ids = get_steam_ids()?;
+    pledge_promises![Stdio Rpath Inet Dns]
+        .or_else(pledge::Error::ignore_platform)
+        .unwrap();
     let db = get_db()?;
+    pledge_promises![Stdio]
+        .or_else(pledge::Error::ignore_platform)
+        .unwrap();
     let parser = Parser::default();
     let games = match parser.load_from_string(&db) {
         ParserResult::WithError(games, _) => {
@@ -46,7 +58,6 @@ fn main() -> Result<(), Box<dyn error::Error>> {
         ParserResult::WithoutError(games) => games,
     };
     let db = GameDataBase::new(games);
-    let ids = get_steam_ids()?;
     for id in ids {
         if let Some(game) = db.get_game_by_steam_id(id) {
             let store = match &game.stores {

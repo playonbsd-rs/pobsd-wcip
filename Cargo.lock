@@ -353,6 +353,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6ac9a59f73473f1b8d852421e59e64809f025994837ef743615c6d0c5b305160"
 
 [[package]]
+name = "pledge"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "252599417b7d9a43b7fdc63dd790b0848666a8910b2ebe1a25118309c3c981e5"
+dependencies = [
+ "libc",
+]
+
+[[package]]
 name = "pobsd-db"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -593,6 +602,7 @@ name = "wcip"
 version = "0.1.0"
 dependencies = [
  "attohttpc",
+ "pledge",
  "pobsd-db",
  "pobsd-parser",
 ]

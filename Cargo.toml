@@ -16,3 +16,4 @@ keywords = ["OpenBSD", "PlayOnBSD"]
 pobsd-parser = "0.4.1"
 pobsd-db = "0.1.4"
 attohttpc = "0.24.1"
+pledge = "0.4.1"
