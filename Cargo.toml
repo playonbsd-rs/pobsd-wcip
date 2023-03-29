@@ -2,7 +2,7 @@
 name = "wcip"
 description = "A small utility that list the games you own on Steam and can be played on OpenBSD"
 authors = ["Hukadan <me@hukadan.org>"]
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 homepage = "https://github.com/playonbsd-rs/pobsd-wcip"
 documentation = "https://docs.rs/wcip"
