@@ -5,7 +5,8 @@ use std::boxed::Box;
 use std::error;
 use std::process::Command;
 
-static DB_URL: &'static str = "https://raw.githubusercontent.com/Hukadan/OpenBSD-Games-Database/add-store-links/openbsd-games.db";
+static DB_URL: &'static str =
+    "https://raw.githubusercontent.com/playonbsd/OpenBSD-Games-Database/main/openbsd-games.db";
 static STEAM_CTL: &'static str = "/usr/local/bin/steamctl";
 
 fn get_db() -> Result<String, attohttpc::Error> {
