@@ -5,9 +5,9 @@ use std::boxed::Box;
 use std::error;
 use std::process::Command;
 
-static DB_URL: &'static str =
+static DB_URL: &str =
     "https://raw.githubusercontent.com/playonbsd/OpenBSD-Games-Database/main/openbsd-games.db";
-static STEAM_CTL: &'static str = "/usr/local/bin/steamctl";
+static STEAM_CTL: &str = "/usr/local/bin/steamctl";
 
 fn get_db() -> Result<String, attohttpc::Error> {
     let content: String = attohttpc::get(DB_URL).send()?.text()?;
@@ -28,7 +28,7 @@ fn get_ids_from_output(output: String) -> Vec<usize> {
     for line in output.lines() {
         // The element of the output are space separated
         // the steam_id being the first element
-        let element: Vec<&str> = line.split(" ").collect();
+        let element: Vec<&str> = line.split(' ').collect();
         // I guess it is ok if it fails for some ids
         if let Ok(id) = element[0].to_string().parse() {
             ids.push(id);
@@ -77,19 +77,19 @@ fn game_to_sting(game: &Game) -> String {
         )
     );
     match &game.hints {
-        Some(hints) => to_display.push(format!("hint: {}", hints.to_string())),
+        Some(hints) => to_display.push(format!("hint: {}", hints)),
         None => to_display.push(String::from("hint: None")),
     };
     match &game.engine {
-        Some(engine) => to_display.push(format!("engine: {}", engine.to_string())),
+        Some(engine) => to_display.push(format!("engine: {}", engine)),
         None => to_display.push(String::from("engine: N/A")),
     };
     match &game.runtime {
-        Some(runtime) => to_display.push(format!("runtime: {}", runtime.to_string())),
+        Some(runtime) => to_display.push(format!("runtime: {}", runtime)),
         None => to_display.push(String::from("runtime: N/A")),
     };
     to_display.push(format!("url: {}", store.url));
-    format!("{}", to_display.join("\n"))
+    to_display.join("\n")
 }
 
 fn main() -> Result<(), Box<dyn error::Error>> {
