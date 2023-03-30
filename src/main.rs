@@ -152,6 +152,22 @@ mod tests {
         game.stores = Some(sls);
         game
     }
+    fn get_ouput() -> String {
+        String::from(
+            "\
+415650 Unknown App 415650
+418930 Unknown App 418930
+424690 Steam Controller Configs - Streaming Client
+443030 Conan Exiles Dedicated Server
+443510 Steam Controller Configs - Steam Button Chord
+466560 Northgard
+476580 Unknown App 476580
+551410 6th Annual Saxxy Awards
+568880 Sniper Elite 4 Dedicated Server
+588460 Unknown App 588460",
+        )
+    }
+
     #[test]
     fn test_game_to_sting() {
         let game = get_test_game();
@@ -173,5 +189,14 @@ mod tests {
             sl,
             &StoreLink::from("https://store.steampowered.com/app/1965800/Dice_Tribes_Ambitions/")
         )
+    }
+    #[test]
+    fn test_get_ids_from_output() {
+        let output = get_ouput();
+        let ids = get_ids_from_output(output);
+        let ex_ids = vec![
+            415650, 418930, 424690, 443030, 443510, 466560, 476580, 551410, 568880, 588460,
+        ];
+        assert_eq!(ids, ex_ids);
     }
 }
