@@ -134,3 +134,44 @@ fn main() -> Result<(), Box<dyn error::Error>> {
     println!("------------------------------------");
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use pobsd_parser::StoreLinks;
+    fn get_test_game() -> Game {
+        let mut game = Game::default();
+        game.name = String::from("Super Game");
+        game.hints = Some(String::from("Some hints"));
+        game.engine = Some(String::from("Engine1"));
+        game.runtime = Some(String::from("Runtime1"));
+        let sl =
+            StoreLink::from("https://store.steampowered.com/app/1965800/Dice_Tribes_Ambitions/");
+        let mut sls = StoreLinks::default();
+        sls.push(sl);
+        game.stores = Some(sls);
+        game
+    }
+    #[test]
+    fn test_game_to_sting() {
+        let game = get_test_game();
+        let disp = game_to_sting(&game);
+        let exp = "\
+        Super Game\n\
+        Install: steamctl depot download -a 1965800 -o <PATH> -os linux64 (if available, windows otherwise)\n\
+        hint: Some hints\n\
+        engine: Engine1\n\
+        runtime: Runtime1\n\
+        url: https://store.steampowered.com/app/1965800/Dice_Tribes_Ambitions/";
+        assert_eq!(disp, exp);
+    }
+    #[test]
+    fn test_get_steam_store() {
+        let game = get_test_game();
+        let sl = get_steam_store(&game);
+        assert_eq!(
+            sl,
+            &StoreLink::from("https://store.steampowered.com/app/1965800/Dice_Tribes_Ambitions/")
+        )
+    }
+}
