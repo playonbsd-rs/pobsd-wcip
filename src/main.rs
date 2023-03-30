@@ -23,9 +23,8 @@ fn get_steamctl_output() -> Result<String, Box<dyn error::Error>> {
     Ok(output)
 }
 
-fn get_steam_ids() -> Result<Vec<usize>, Box<dyn error::Error>> {
+fn get_ids_from_output(output: String) -> Vec<usize> {
     let mut ids: Vec<usize> = Vec::new();
-    let output = get_steamctl_output()?;
     for line in output.lines() {
         // The element of the output are space separated
         // the steam_id being the first element
@@ -35,18 +34,75 @@ fn get_steam_ids() -> Result<Vec<usize>, Box<dyn error::Error>> {
             ids.push(id);
         }
     }
+    ids
+}
+
+fn get_steam_ids() -> Result<Vec<usize>, Box<dyn error::Error>> {
+    let output = get_steamctl_output()?;
+    let ids = get_ids_from_output(output);
     Ok(ids)
 }
 
+fn get_steam_store(game: &Game) -> &StoreLink {
+    match &game.stores {
+        Some(stores) => {
+            // the get_game_by_steam_id uses store entries
+            // so there is for sure one steam store link
+            let store: &StoreLink = stores
+                .inner_ref()
+                .iter()
+                .filter(|a| a.store.eq(&Store::Steam))
+                .collect::<Vec<&StoreLink>>()
+                .first()
+                .cloned()
+                .unwrap();
+            store
+        }
+        // the get_game_by_steam_id uses stores entry
+        // therefore every game returned by the method
+        // should have at least of store link
+        _ => unreachable!(),
+    }
+}
+
+fn game_to_sting(game: &Game) -> String {
+    let store = get_steam_store(game);
+    let id = store.id.unwrap();
+    let mut to_display: Vec<String> = Vec::new();
+    to_display.push(game.name.to_string());
+    to_display.push(
+        format!(
+            "Install: steamctl depot download -a {} -o <PATH> -os linux64 (if available, windows otherwise)", 
+            id
+        )
+    );
+    match &game.hints {
+        Some(hints) => to_display.push(format!("hint: {}", hints.to_string())),
+        None => to_display.push(String::from("hint: None")),
+    };
+    match &game.engine {
+        Some(engine) => to_display.push(format!("engine: {}", engine.to_string())),
+        None => to_display.push(String::from("engine: N/A")),
+    };
+    match &game.runtime {
+        Some(runtime) => to_display.push(format!("runtime: {}", runtime.to_string())),
+        None => to_display.push(String::from("runtime: N/A")),
+    };
+    to_display.push(format!("url: {}", store.url));
+    format!("{}", to_display.join("\n"))
+}
+
 fn main() -> Result<(), Box<dyn error::Error>> {
-    pledge_promises![Stdio Rpath Inet Dns Exec Proc Unveil]
+    pledge_promises![Stdio Rpath Inet Dns Exec Proc]
         .or_else(pledge::Error::ignore_platform)
         .unwrap();
     let ids = get_steam_ids()?;
+
     pledge_promises![Stdio Rpath Inet Dns]
         .or_else(pledge::Error::ignore_platform)
         .unwrap();
     let db = get_db()?;
+
     pledge_promises![Stdio]
         .or_else(pledge::Error::ignore_platform)
         .unwrap();
@@ -69,45 +125,11 @@ fn main() -> Result<(), Box<dyn error::Error>> {
     game_list.sort();
     // Displaying the games
     for game in game_list {
-        let store = match &game.stores {
-            Some(stores) => {
-                let store: Vec<&StoreLink> = stores
-                    .inner_ref()
-                    .iter()
-                    .filter(|a| a.store.eq(&Store::Steam))
-                    .collect();
-                // the get_game_by_steam_id uses store entries
-                // so there is for sure one steam store link
-                store
-                    .get(0)
-                    .expect("Expected one Steam store link, found none")
-                    .clone()
-            }
-            // the get_game_by_steam_id uses stores entry
-            // therefore every game returned by the method
-            // should have at least of store link
-            _ => unreachable!(),
-        };
-        // This is game was chosen according to its id
-        // and therefore has one
-        let id = store.id.unwrap();
-        let hints = match &game.hints {
-            Some(hints) => hints.into(),
-            None => String::from("None"),
-        };
-        let engine = match &game.engine {
-            Some(engine) => engine.into(),
-            None => String::from("N/A"),
-        };
-        let runtime = match &game.runtime {
-            Some(runtime) => runtime.into(),
-            None => String::from("N/A"),
-        };
-        println!("------------------------------------");
+        let game_display = game_to_sting(game);
         println!(
-                " {}\n Hints: {}\n Install: steamctl depot download -a {} -o <PATH> -os linux64 (if available, windows otherwise)\n engine: {}\n runtime: {}\n url: {}",
-                &game.name, hints, id, engine, runtime, store.url
-            );
+            "-----------------------------------------\n{}",
+            game_display
+        );
     }
     println!("------------------------------------");
     Ok(())
