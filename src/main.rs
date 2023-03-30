@@ -1,6 +1,6 @@
 use pledge::pledge_promises;
 use pobsd_db::GameDataBase;
-use pobsd_parser::{Parser, ParserResult, Store, StoreLink};
+use pobsd_parser::{Game, Parser, ParserResult, Store, StoreLink};
 use std::boxed::Box;
 use std::error;
 use std::process::Command;
@@ -59,45 +59,55 @@ fn main() -> Result<(), Box<dyn error::Error>> {
         ParserResult::WithoutError(games) => games,
     };
     let db = GameDataBase::new(games);
+    let mut game_list: Vec<&Game> = vec![];
+    // Make a list of owned games running on OpenBSD
     for id in ids {
         if let Some(game) = db.get_game_by_steam_id(id) {
-            let store = match &game.stores {
-                Some(stores) => {
-                    let store: Vec<&StoreLink> = stores
-                        .inner_ref()
-                        .iter()
-                        .filter(|a| a.store.eq(&Store::Steam))
-                        .collect();
-                    // the get_game_by_steam_id uses store entries
-                    // so there is for sure one steam store link
-                    store
-                        .get(0)
-                        .expect("Expected at least one Steam store link, found none")
-                        .clone()
-                }
-                // the get_game_by_steam_id uses stores entry
-                // therefore every game returned by the method
-                // should have at least of store link
-                _ => unreachable!(),
-            };
-            let hints = match &game.hints {
-                Some(hints) => hints.into(),
-                None => String::from("None"),
-            };
-            let engine = match &game.engine {
-                Some(engine) => engine.into(),
-                None => String::from("N/A"),
-            };
-            let runtime = match &game.runtime {
-                Some(runtime) => runtime.into(),
-                None => String::from("N/A"),
-            };
-            println!("------------------------------------");
-            println!(
-                " {}\n Hints: {}\n Install: steamctl depot download -a {} -o <PATH>\n engine: {}\n runtime: {}\n url: {}",
+            game_list.push(game);
+        }
+    }
+    game_list.sort();
+    // Displaying the games
+    for game in game_list {
+        let store = match &game.stores {
+            Some(stores) => {
+                let store: Vec<&StoreLink> = stores
+                    .inner_ref()
+                    .iter()
+                    .filter(|a| a.store.eq(&Store::Steam))
+                    .collect();
+                // the get_game_by_steam_id uses store entries
+                // so there is for sure one steam store link
+                store
+                    .get(0)
+                    .expect("Expected one Steam store link, found none")
+                    .clone()
+            }
+            // the get_game_by_steam_id uses stores entry
+            // therefore every game returned by the method
+            // should have at least of store link
+            _ => unreachable!(),
+        };
+        // This is game was chosen according to its id
+        // and therefore has one
+        let id = store.id.unwrap();
+        let hints = match &game.hints {
+            Some(hints) => hints.into(),
+            None => String::from("None"),
+        };
+        let engine = match &game.engine {
+            Some(engine) => engine.into(),
+            None => String::from("N/A"),
+        };
+        let runtime = match &game.runtime {
+            Some(runtime) => runtime.into(),
+            None => String::from("N/A"),
+        };
+        println!("------------------------------------");
+        println!(
+                " {}\n Hints: {}\n Install: steamctl depot download -a {} -o <PATH> -os linux64 (if available, windows otherwise)\n engine: {}\n runtime: {}\n url: {}",
                 &game.name, hints, id, engine, runtime, store.url
             );
-        }
     }
     println!("------------------------------------");
     Ok(())
