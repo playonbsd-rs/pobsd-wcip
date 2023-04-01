@@ -17,3 +17,7 @@ pobsd-parser = "0.4.1"
 pobsd-db = "0.1.4"
 attohttpc = "0.24.1"
 pledge = "0.4.1"
+
+[env]
+OPENSSL_LIB_DIR = "/usr/local/lib/eopenssl11/"
+OPENSSL_INCLUDE_DIR = "/usr/local/include/eopenssl11/"
