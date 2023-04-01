@@ -8,7 +8,6 @@ use crossterm::terminal::{
 use crossterm::{event, execute};
 use pobsd_db::GameDataBase;
 use pobsd_parser::Game;
-use std::path::Path;
 use tui::backend::{Backend, CrosstermBackend};
 use tui::layout::{Constraint, Direction, Layout, Rect};
 use tui::style::{Color, Modifier, Style};
