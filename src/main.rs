@@ -1,3 +1,6 @@
+mod tui;
+
+use crate::tui::browse;
 use pledge::pledge_promises;
 use pobsd_db::GameDataBase;
 use pobsd_parser::{Game, Parser, ParserResult, Store, StoreLink};
@@ -93,19 +96,25 @@ fn game_to_sting(game: &Game) -> String {
 }
 
 fn main() -> Result<(), Box<dyn error::Error>> {
-    pledge_promises![Stdio Rpath Inet Dns Exec Proc]
+    /*
+    pledge_promises![Tty Rpath Inet Dns Exec Proc]
         .or_else(pledge::Error::ignore_platform)
         .unwrap();
+    */
     let ids = get_steam_ids()?;
 
-    pledge_promises![Stdio Rpath Inet Dns]
+    /*
+    pledge_promises![Tty Stdio Rpath Inet Dns]
         .or_else(pledge::Error::ignore_platform)
         .unwrap();
+    */
     let db = get_db()?;
 
-    pledge_promises![Stdio]
+    /*
+    pledge_promises![Tty Stdio]
         .or_else(pledge::Error::ignore_platform)
         .unwrap();
+    */
     let parser = Parser::default();
     let games = match parser.load_from_string(&db) {
         ParserResult::WithError(games, _) => {
@@ -115,14 +124,16 @@ fn main() -> Result<(), Box<dyn error::Error>> {
         ParserResult::WithoutError(games) => games,
     };
     let db = GameDataBase::new(games);
-    let mut game_list: Vec<&Game> = vec![];
+    let mut game_list: Vec<Game> = vec![];
     // Make a list of owned games running on OpenBSD
     for id in ids {
         if let Some(game) = db.get_game_by_steam_id(id) {
-            game_list.push(game);
+            game_list.push(game.clone());
         }
     }
     game_list.sort();
+    browse(game_list)?;
+    /*
     // Displaying the games
     for game in game_list {
         let game_display = game_to_sting(game);
@@ -132,6 +143,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
         );
     }
     println!("------------------------------------");
+    */
     Ok(())
 }
 
