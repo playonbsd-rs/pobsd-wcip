@@ -1,4 +1,5 @@
 use ::std::error;
+use pledge::pledge_promises;
 use pobsd_db::GameDataBase;
 use pobsd_parser::Game;
 use std::process::Command;
@@ -9,6 +10,9 @@ fn get_steamctl_output() -> Result<String, Box<dyn error::Error>> {
     eprintln!("Loading steam data. Please wait.");
     // grap steamctl output
     let output = Command::new(STEAM_CTL).arg("apps").arg("list").output()?;
+    pledge_promises![Tty Stdio Rpath Inet Dns]
+        .or_else(pledge::Error::ignore_platform)
+        .unwrap();
     // convert the output to valid UTF-8
     let output = std::str::from_utf8(&output.stdout)?.to_string();
     Ok(output)
@@ -49,20 +53,7 @@ pub(crate) fn get_steam_games(db: GameDataBase) -> Result<Vec<Game>, Box<dyn err
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pobsd_parser::{StoreLink, StoreLinks};
-    fn get_test_game() -> Game {
-        let mut game = Game::default();
-        game.name = String::from("Super Game");
-        game.hints = Some(String::from("Some hints"));
-        game.engine = Some(String::from("Engine1"));
-        game.runtime = Some(String::from("Runtime1"));
-        let sl =
-            StoreLink::from("https://store.steampowered.com/app/1965800/Dice_Tribes_Ambitions/");
-        let mut sls = StoreLinks::default();
-        sls.push(sl);
-        game.stores = Some(sls);
-        game
-    }
+
     fn get_ouput() -> String {
         String::from(
             "\
