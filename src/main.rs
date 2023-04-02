@@ -1,7 +1,10 @@
 mod ls;
+mod os_suport;
 mod steam_games;
 #[cfg(feature = "tui")]
 mod tui;
+#[macro_use]
+extern crate lazy_static;
 
 use crate::ls::display_game_list;
 use crate::steam_games::get_steam_games;

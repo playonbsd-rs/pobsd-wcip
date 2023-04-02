@@ -885,6 +885,7 @@ dependencies = [
  "attohttpc",
  "clap",
  "crossterm 0.26.1",
+ "lazy_static",
  "pledge",
  "pobsd-db",
  "pobsd-parser",
