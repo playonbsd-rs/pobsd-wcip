@@ -26,12 +26,11 @@ fn game_to_string(game: &Game) -> String {
     let id = store.id.unwrap();
     let mut to_display: Vec<String> = Vec::new();
     to_display.push(game.name.to_string());
-    to_display.push(
-        format!(
-            "Install: steamctl depot download -a {} -o <PATH> -os linux64 (if available, windows otherwise)", 
-            id
-        )
-    );
+    to_display.push(format!(
+        "Install: steamctl depot download -a {} -o <PATH> -os {}",
+        id,
+        crate::os_support::get_preferable_os(game.uid)
+    ));
     match &game.hints {
         Some(hints) => to_display.push(format!("hint: {}", hints)),
         None => to_display.push(String::from("hint: None")),

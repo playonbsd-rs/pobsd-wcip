@@ -1,5 +1,5 @@
 mod ls;
-mod os_suport;
+mod os_support;
 mod steam_games;
 #[cfg(feature = "tui")]
 mod tui;
