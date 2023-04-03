@@ -2,9 +2,46 @@ use ::std::error;
 use pledge::pledge_promises;
 use pobsd_db::GameDataBase;
 use pobsd_parser::Game;
+use serde::{Deserialize, Serialize};
 use std::process::Command;
 
+use crate::config::Config;
+
 static STEAM_CTL: &str = "/usr/local/bin/steamctl";
+
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+struct OwnedGame {
+    appid: usize,
+    playtime_forever: usize,
+    playtime_windows_forever: usize,
+    playtime_mac_forever: usize,
+    playtime_linux_forever: usize,
+    rtime_last_played: usize,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+struct OwnedGames {
+    game_count: usize,
+    games: Vec<OwnedGame>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+struct OwnedGamesResponse {
+    response: OwnedGames,
+}
+
+fn get_steam_api_url(steam_id: &str, steam_key: &str) -> String {
+    format!("https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={}&steamid={}&format=json", steam_key, steam_id)
+}
+
+fn get_owned_games(steam_id: &str, steam_key: &str) -> Result<OwnedGames, Box<dyn error::Error>> {
+    eprintln!("Loading steam data. Please wait.");
+    let url = get_steam_api_url(steam_id, steam_key);
+    let content: String = attohttpc::get(url).send()?.text()?;
+    let res: OwnedGamesResponse = serde_json::from_str(&content)?;
+    let res = res.response;
+    Ok(res)
+}
 
 fn get_steamctl_output() -> Result<String, Box<dyn error::Error>> {
     eprintln!("Loading steam data. Please wait.");
@@ -32,15 +69,38 @@ fn get_ids_from_output(output: String) -> Vec<usize> {
     ids
 }
 
-fn get_steam_ids() -> Result<Vec<usize>, Box<dyn error::Error>> {
+fn get_steam_ids_from_steamctl() -> Result<Vec<usize>, Box<dyn error::Error>> {
     let output = get_steamctl_output()?;
     let ids = get_ids_from_output(output);
     Ok(ids)
 }
 
-pub(crate) fn get_steam_games(db: GameDataBase) -> Result<Vec<Game>, Box<dyn error::Error>> {
+fn get_steam_ids_from_webapi(
+    steam_id: &str,
+    steam_key: &str,
+) -> Result<Vec<usize>, Box<dyn error::Error>> {
+    let owned_games = get_owned_games(steam_id, steam_key)?;
+    let mut ids: Vec<usize> = vec![];
+    for game in owned_games.games {
+        ids.push(game.appid);
+    }
+    Ok(ids)
+}
+
+pub(crate) fn get_steam_games(
+    db: GameDataBase,
+    config: &Config,
+) -> Result<Vec<Game>, Box<dyn error::Error>> {
     let mut game_list: Vec<Game> = vec![];
-    let ids = get_steam_ids()?;
+    let ids = if let Some(steam_id) = &config.steam_id {
+        if let Some(steam_key) = &config.steam_key {
+            get_steam_ids_from_webapi(steam_id, steam_key)?
+        } else {
+            get_steam_ids_from_steamctl()?
+        }
+    } else {
+        get_steam_ids_from_steamctl()?
+    };
     for id in ids {
         if let Some(game) = db.get_game_by_steam_id(id) {
             game_list.push(game.clone());
