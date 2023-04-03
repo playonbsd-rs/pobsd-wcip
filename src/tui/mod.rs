@@ -36,7 +36,8 @@ pub fn browse(games: Vec<Game>) -> Result<(), std::io::Error> {
     let game_db = GameDataBase::new(games);
     app_state.game_db = game_db;
     enable_raw_mode()?;
-    execute!(std::io::stdout(), EnterAlternateScreen, EnableMouseCapture)?;
+    //execute!(std::io::stdout(), EnterAlternateScreen, EnableMouseCapture)?;
+    execute!(std::io::stdout(), EnterAlternateScreen)?;
     let backend = CrosstermBackend::new(std::io::stdout());
     let mut terminal = Terminal::new(backend)?;
 

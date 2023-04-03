@@ -7,17 +7,20 @@ mod steam_games;
 extern crate lazy_static;
 
 use crate::database::get_game_db;
-use crate::ls::display_game_list;
 use crate::steam_games::get_steam_games;
 use pledge::pledge_promises;
 use std::boxed::Box;
 use std::error;
 
+// Without TUI feature
+#[cfg(not(feature = "tui"))]
+use crate::ls::display_game_list;
+
 // TUI feature
 #[cfg(feature = "tui")]
-use crate::tui::browse;
-#[cfg(feature = "tui")]
 mod tui;
+#[cfg(feature = "tui")]
+mod tui_launcher;
 
 fn main() -> Result<(), Box<dyn error::Error>> {
     pledge_promises![Tty Stdio Rpath Inet Dns Exec Proc]
@@ -35,7 +38,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
 
     // TUI feature
     #[cfg(feature = "tui")]
-    browse(game_list)?;
+    tui_launcher::run(game_list)?;
 
     // Without TUI feature
     #[cfg(not(feature = "tui"))]
