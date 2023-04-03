@@ -82,7 +82,7 @@ mod tests {
         let disp = game_to_string(&game);
         let exp = "\
         Super Game\n\
-        Install: steamctl depot download -a 1965800 -o <PATH> -os linux64 (if available, windows otherwise)\n\
+        Install: steamctl depot download -a 1965800 -o <PATH> -os any\n\
         hint: Some hints\n\
         engine: Engine1\n\
         runtime: Runtime1\n\
