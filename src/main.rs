@@ -1,14 +1,13 @@
 mod config;
 mod database;
 mod ls;
-mod os_support;
-mod steam_games;
+mod steam;
 
 #[macro_use]
 extern crate lazy_static;
 
 use crate::database::get_game_db;
-use crate::steam_games::get_steam_games;
+use crate::steam::get_steam_games;
 use pledge::pledge_promises;
 use std::boxed::Box;
 use std::error;

@@ -1,13 +1,5 @@
 use ::std::error;
-use pledge::pledge_promises;
-use pobsd_db::GameDataBase;
-use pobsd_parser::Game;
 use serde::{Deserialize, Serialize};
-use std::process::Command;
-
-use crate::config::Config;
-
-static STEAM_CTL: &str = "/usr/local/bin/steamctl";
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
 struct OwnedGame {
@@ -43,39 +35,7 @@ fn get_owned_games(steam_id: &str, steam_key: &str) -> Result<OwnedGames, Box<dy
     Ok(res)
 }
 
-fn get_steamctl_output() -> Result<String, Box<dyn error::Error>> {
-    eprintln!("Loading steam data. Please wait.");
-    // grap steamctl output
-    let output = Command::new(STEAM_CTL).arg("apps").arg("list").output()?;
-    pledge_promises![Tty Stdio Rpath Inet Dns]
-        .or_else(pledge::Error::ignore_platform)
-        .unwrap();
-    // convert the output to valid UTF-8
-    let output = std::str::from_utf8(&output.stdout)?.to_string();
-    Ok(output)
-}
-
-fn get_ids_from_output(output: String) -> Vec<usize> {
-    let mut ids: Vec<usize> = Vec::new();
-    for line in output.lines() {
-        // The element of the output are space separated
-        // the steam_id being the first element
-        let element: Vec<&str> = line.split(' ').collect();
-        // I guess it is ok if it fails for some ids
-        if let Ok(id) = element[0].to_string().parse() {
-            ids.push(id);
-        }
-    }
-    ids
-}
-
-fn get_steam_ids_from_steamctl() -> Result<Vec<usize>, Box<dyn error::Error>> {
-    let output = get_steamctl_output()?;
-    let ids = get_ids_from_output(output);
-    Ok(ids)
-}
-
-fn get_steam_ids_from_webapi(
+pub(super) fn get_steam_ids_from_webapi(
     steam_id: &str,
     steam_key: &str,
 ) -> Result<Vec<usize>, Box<dyn error::Error>> {
@@ -85,29 +45,6 @@ fn get_steam_ids_from_webapi(
         ids.push(game.appid);
     }
     Ok(ids)
-}
-
-pub(crate) fn get_steam_games(
-    db: GameDataBase,
-    config: &Config,
-) -> Result<Vec<Game>, Box<dyn error::Error>> {
-    let mut game_list: Vec<Game> = vec![];
-    let ids = if let Some(steam_id) = &config.steam_id {
-        if let Some(steam_key) = &config.steam_key {
-            get_steam_ids_from_webapi(steam_id, steam_key)?
-        } else {
-            get_steam_ids_from_steamctl()?
-        }
-    } else {
-        get_steam_ids_from_steamctl()?
-    };
-    for id in ids {
-        if let Some(game) = db.get_game_by_steam_id(id) {
-            game_list.push(game.clone());
-        }
-    }
-    game_list.sort();
-    Ok(game_list)
 }
 
 #[cfg(test)]
