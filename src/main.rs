@@ -6,6 +6,7 @@ mod steam;
 #[macro_use]
 extern crate lazy_static;
 
+use crate::config::Config;
 use crate::database::get_game_db;
 use crate::steam::get_steam_games;
 use pledge::pledge_promises;
@@ -23,7 +24,15 @@ mod tui;
 mod tui_launcher;
 
 fn main() -> Result<(), Box<dyn error::Error>> {
-    let config = config::get_config();
+    // Set config to default if the config file
+    // cannot be read
+    let config = match config::get_config() {
+        Ok(config) => config,
+        Err(_) => {
+            eprintln!("Error while reading config file, using default.");
+            Config::default()
+        }
+    };
     pledge_promises![Tty Stdio Rpath Inet Dns Exec Proc]
         .or_else(pledge::Error::ignore_platform)
         .unwrap();

@@ -13,14 +13,18 @@ use pobsd_parser::Game;
 use self::os_lookup_table::GAMETOOS;
 
 pub fn get_preferable_os(game_id: u32) -> String {
-    if let Some(oss) = GAMETOOS.get(&game_id) {
-        if oss.contains(&"linux") {
-            return String::from("linux");
-        } else if oss.contains(&"win") {
-            return String::from("win");
+    match GAMETOOS.get(&game_id) {
+        Some(oss) => {
+            if oss.contains(&"linux") {
+                String::from("linux")
+            } else if oss.contains(&"win") {
+                String::from("win")
+            } else {
+                String::from("any")
+            }
         }
+        None => String::from("any"),
     }
-    String::from("any")
 }
 
 pub(crate) fn get_steam_games(
@@ -28,14 +32,14 @@ pub(crate) fn get_steam_games(
     config: &Config,
 ) -> Result<Vec<Game>, Box<dyn error::Error>> {
     let mut game_list: Vec<Game> = vec![];
-    let ids = if let Some(steam_id) = &config.steam_id {
-        if let Some(steam_key) = &config.steam_key {
-            get_steam_ids_from_webapi(steam_id, steam_key)?
-        } else {
-            get_steam_ids_from_steamctl()?
-        }
-    } else {
-        get_steam_ids_from_steamctl()?
+    let ids = match &config.steam_id {
+        // Use the webapi if both steam_id and steam_key
+        // are set
+        Some(steam_id) => match &config.steam_key {
+            Some(steam_key) => get_steam_ids_from_webapi(steam_id, steam_key)?,
+            None => get_steam_ids_from_steamctl()?,
+        },
+        None => get_steam_ids_from_steamctl()?,
     };
     for id in ids {
         if let Some(game) = db.get_game_by_steam_id(id) {

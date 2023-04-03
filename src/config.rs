@@ -2,7 +2,7 @@ use directories::{self, BaseDirs};
 use serde::Deserialize;
 use std::path::PathBuf;
 
-#[derive(Deserialize, Default, Debug)]
+#[derive(Deserialize, Default, Debug, Eq, PartialEq)]
 pub struct Config {
     pub download_path: Option<String>,
     pub steam_id: Option<String>,
@@ -10,30 +10,56 @@ pub struct Config {
 }
 
 fn get_config_file_path() -> Option<PathBuf> {
-    if let Some(base_dir) = BaseDirs::new() {
-        let mut path = PathBuf::from(base_dir.config_dir());
-        path.push("wcip/config.toml");
-        Some(path)
-    } else {
-        None
+    match BaseDirs::new() {
+        Some(base_dir) => {
+            let mut path = PathBuf::from(base_dir.config_dir());
+            path.push("wcip/config.toml");
+            Some(path)
+        }
+        None => None,
     }
 }
 
 fn get_config_content() -> Result<String, std::io::Error> {
-    if let Some(file) = get_config_file_path() {
-        let content = std::fs::read_to_string(file)?;
-        Ok(content)
-    } else {
-        Ok(String::from(""))
+    match get_config_file_path() {
+        Some(file) => {
+            let content = std::fs::read_to_string(file)?;
+            Ok(content)
+        }
+        None => Ok(String::from("")),
     }
 }
 
-pub fn get_config() -> Config {
-    if let Ok(content) = get_config_content() {
-        let config: Config = toml::from_str(&content).unwrap();
-        return config;
-    } else {
-        eprintln!("Could not open config file, using default values");
+fn content_to_config(content: String) -> Result<Config, Box<dyn std::error::Error>> {
+    let config: Config = toml::from_str(&content)?;
+    Ok(config)
+}
+
+pub fn get_config() -> Result<Config, Box<dyn std::error::Error>> {
+    let content = get_config_content()?;
+    let config = content_to_config(content)?;
+    Ok(config)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    fn get_test_config() -> String {
+        String::from(
+            "download_path = \"test\"\n
+        steam_id = \"123\"\n
+        steam_key = \"456\"",
+        )
     }
-    Config::default()
+    #[test]
+    fn test_content_to_config() {
+        let content = get_test_config();
+        let exp = Config {
+            steam_id: Some("123".to_string()),
+            steam_key: Some("456".to_string()),
+            download_path: Some("test".to_string()),
+        };
+        let conf = content_to_config(content).unwrap();
+        assert_eq!(conf, exp);
+    }
 }

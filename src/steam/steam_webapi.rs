@@ -31,8 +31,7 @@ fn get_owned_games(steam_id: &str, steam_key: &str) -> Result<OwnedGames, Box<dy
     let url = get_steam_api_url(steam_id, steam_key);
     let content: String = attohttpc::get(url).send()?.text()?;
     let res: OwnedGamesResponse = serde_json::from_str(&content)?;
-    let res = res.response;
-    Ok(res)
+    Ok(res.response)
 }
 
 pub(super) fn get_steam_ids_from_webapi(
