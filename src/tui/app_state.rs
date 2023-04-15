@@ -98,7 +98,7 @@ impl AppState {
     }
     pub(crate) fn move_up(&mut self) {
         let len_list = if self.search_text.is_empty() {
-            self.game_db.get_all_games().into_inner().len()
+            self.game_db.get_all_games().count
         } else {
             self.search_list().len()
         };
@@ -124,7 +124,7 @@ impl AppState {
     }
     pub(crate) fn move_down(&mut self) {
         let len_list = if self.search_text.is_empty() {
-            self.game_db.get_all_games().into_inner().len()
+            self.game_db.get_all_games().count
         } else {
             self.search_list().len()
         };
