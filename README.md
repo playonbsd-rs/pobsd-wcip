@@ -1,6 +1,7 @@
-[![Build](https://github.com/playonbsd-rs/pobsd-wcip/actions/workflows/rust.yml/badge.svg)](https://github.com/playonbsd-rs/pobsd-wcip/actions/workflows/rust.yml)
-[![Clippy](https://github.com/playonbsd-rs/pobsd-wcip/actions/workflows/rust-clippy.yml/badge.svg)](https://github.com/playonbsd-rs/pobsd-wcip/actions/workflows/rust-clippy.yml)
+[![check](https://github.com/playonbsd-rs/pobsd-wcip/actions/workflows/check.yml/badge.svg)](https://github.com/playonbsd-rs/pobsd-wcip/actions/workflows/check.yml)
+[![test](https://github.com/playonbsd-rs/pobsd-wcip/actions/workflows/test.yml/badge.svg)](https://github.com/playonbsd-rs/pobsd-wcip/actions/workflows/test.yml)
 [![Crates.io (latest)](https://img.shields.io/crates/v/wcip?style=flat)](https://crates.io/crates/wcip)
+[![codecov](https://codecov.io/gh/playonbsd-rs/pobsd-wcip/branch/main/graph/badge.svg?token=1QNYI0Q32N)](https://codecov.io/gh/playonbsd-rs/pobsd-wcip)
 
 
 ## wcip (for What Can I Play)
