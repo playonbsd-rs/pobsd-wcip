@@ -149,21 +149,21 @@ impl AppState {
         self.list_state.select(selected);
     }
 }
-/*
 #[cfg(test)]
 mod test_app_states {
     use super::*;
-    use pobsd_parser::Game;
+    use libpobsd::Game;
     fn get_games() -> Vec<Game> {
         let mut games: Vec<Game> = Vec::new();
         let params = vec![
-            ("AAa", "GenreA", "TagA"),
-            ("Bbb", "GenreB", "TagB"),
-            ("Ccc", "GenreC", "TagC"),
+            (1, "AAa", "GenreA", "TagA"),
+            (2, "Bbb", "GenreB", "TagB"),
+            (3, "Ccc", "GenreC", "TagC"),
         ];
-        for (name, genres, tags) in params {
+        for (uid, name, genres, tags) in params {
             let mut game = Game::default();
-            game.name = name.into();
+            game.uid = uid;
+            game.name = name.to_string();
             game.genres = Some(vec![genres.split(',').map(|a| a.trim()).collect()]);
             game.tags = Some(vec![tags.split(',').map(|a| a.trim()).collect()]);
             games.push(game)
@@ -181,12 +181,36 @@ mod test_app_states {
     fn test_app_state_search_method_in_name_mode() {
         let games = get_games();
         let mut app_state = AppState::new();
-        app_state.mode = InputMode::Search(SearchMode::Name);
-        app_state.games = games.clone();
-        app_state.search_text = "Aaa".into();
-        app_state.search_list();
-        assert_eq!(app_state.search_list[0], games[0]);
-        assert_eq!(app_state.search_list.len(), 1);
+        app_state.change_mode(InputMode::Search(SearchMode::Name));
+        app_state.game_db = GameDataBase::new(games.clone());
+        app_state.search_text = "Aaa".to_string();
+        assert_eq!(app_state.search_list()[0], &games[0]);
+        assert_eq!(app_state.search_list().len(), 1);
+        app_state.search_text = "does not exist".to_string();
+        assert_eq!(app_state.search_list().len(), 0);
+    }
+    #[test]
+    fn test_app_state_search_method_in_tag_mode() {
+        let games = get_games();
+        let mut app_state = AppState::new();
+        app_state.change_mode(InputMode::Search(SearchMode::Tag));
+        app_state.game_db = GameDataBase::new(games.clone());
+        app_state.search_text = "TagC".to_string();
+        assert_eq!(app_state.search_list()[0], &games[2]);
+        assert_eq!(app_state.search_list().len(), 1);
+        app_state.search_text = "does not exist".to_string();
+        assert_eq!(app_state.search_list().len(), 0);
+    }
+    #[test]
+    fn test_app_state_search_method_in_genre_mode() {
+        let games = get_games();
+        let mut app_state = AppState::new();
+        app_state.change_mode(InputMode::Search(SearchMode::Genre));
+        app_state.game_db = GameDataBase::new(games.clone());
+        app_state.search_text = "GenreB".to_string();
+        assert_eq!(app_state.search_list()[0], &games[1]);
+        assert_eq!(app_state.search_list().len(), 1);
+        app_state.search_text = "does not exist".to_string();
+        assert_eq!(app_state.search_list().len(), 0);
     }
 }
-*/
