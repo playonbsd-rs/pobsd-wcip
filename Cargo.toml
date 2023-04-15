@@ -21,11 +21,7 @@ serde = { version = "1.0.159", features = ["derive"] }
 serde_json = "1.0.95"
 config = { version = "0.13.3", features = ["toml"]}
 
-# Optional, only for TUI
-clap = { version = "4.2.1", optional = true }
-tui = { version = "0.19.0", optional = true }
-crossterm = { version = "0.26.1", optional = true }
-
-[features]
-default = ["tui"]
-tui = ["dep:clap", "dep:tui", "dep:crossterm"]
+# for TUI
+clap = "4.2.1"
+tui = "0.19.0"
+crossterm = "0.26.1"

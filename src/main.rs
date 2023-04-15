@@ -13,14 +13,8 @@ use pledge::pledge_promises;
 use std::boxed::Box;
 use std::error;
 
-// Without TUI feature
-#[cfg(not(feature = "tui"))]
-use crate::ls::display_game_list;
-
 // TUI feature
-#[cfg(feature = "tui")]
 mod tui;
-#[cfg(feature = "tui")]
 mod tui_launcher;
 
 fn main() -> Result<(), Box<dyn error::Error>> {
@@ -47,12 +41,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
         .unwrap();
 
     // TUI feature
-    #[cfg(feature = "tui")]
     tui_launcher::run(game_list, &config)?;
-
-    // Without TUI feature
-    #[cfg(not(feature = "tui"))]
-    display_game_list(game_list, &config);
 
     Ok(())
 }
