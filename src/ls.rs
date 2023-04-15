@@ -39,7 +39,7 @@ fn game_to_string(game: &Game, config: &Config) -> String {
         "Install: steamctl depot download -a {} -o {} -os {}",
         id,
         path,
-        get_preferable_os(game.uid)
+        get_preferable_os(game)
     ));
     match &game.hints {
         Some(hints) => to_display.push(format!("hint: {}", hints)),

@@ -11,8 +11,8 @@ use libpobsd::{Game, GameDataBase};
 
 use self::os_lookup_table::GAMETOOS;
 
-pub fn get_preferable_os(game_id: u32) -> String {
-    match GAMETOOS.get(&game_id) {
+pub fn get_preferable_os(game: &Game) -> String {
+    match GAMETOOS.get(&game.uid) {
         Some(oss) => {
             if oss.contains(&"linux") {
                 String::from("linux")
