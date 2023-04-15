@@ -25,7 +25,7 @@ pub fn display_game(game: &Game) -> (Paragraph, Paragraph, Paragraph) {
                 .clone()
                 .into_inner()
                 .into_iter()
-                .map(|a| a.url.clone())
+                .map(|a| a.url)
                 .collect(),
         ));
         for spans in vecspans {
