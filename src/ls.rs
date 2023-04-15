@@ -65,7 +65,7 @@ pub(crate) fn display_game_list(game_list: Vec<Game>) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pobsd_parser::StoreLinks;
+    use libpobsd::parser::StoreLinks;
     fn get_test_game() -> Game {
         let mut game = Game::default();
         game.name = String::from("Super Game");
