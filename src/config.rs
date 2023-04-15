@@ -4,7 +4,7 @@ use std::path::PathBuf;
 
 #[derive(Deserialize, Default, Debug, Eq, PartialEq)]
 pub struct Config {
-    pub download_path: Option<String>,
+    pub download_path: Option<PathBuf>,
     pub steam_id: Option<String>,
     pub steam_key: Option<String>,
 }
@@ -57,7 +57,7 @@ mod tests {
         let exp = Config {
             steam_id: Some("123".to_string()),
             steam_key: Some("456".to_string()),
-            download_path: Some("test".to_string()),
+            download_path: Some(PathBuf::from("test")),
         };
         let conf = content_to_config(content).unwrap();
         assert_eq!(conf, exp);
