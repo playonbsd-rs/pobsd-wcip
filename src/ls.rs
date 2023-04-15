@@ -32,7 +32,11 @@ fn game_to_string(game: &Game, config: &Config) -> String {
     let mut to_display: Vec<String> = Vec::new();
     to_display.push(game.name.to_string());
     let path = match &config.download_path {
-        Some(path) => path.to_string_lossy().into_owned(),
+        Some(path) => {
+            let mut path = path.clone();
+            path.push(game.uid.to_string());
+            path.to_string_lossy().into_owned()
+        }
         None => "<PATH>".to_string(),
     };
     to_display.push(format!(
