@@ -9,7 +9,7 @@ wcip is a small utility that compares the `steamctl apps list` output to the Pla
 database, and displays the games you own that can be played on OpenBSD.
 
 ### Installation
-You need to install `steamctl` (games/steamctl) and openssl (security/openssl/1.1).
+You need to install `steamctl` (games/steamctl) or get a `steam_key`, and openssl (security/openssl/1.1).
 
 You can install `wcip` using `cargo install wcip` with following env variables (to adapt
 according to your openssl version if different from the one indicated above):

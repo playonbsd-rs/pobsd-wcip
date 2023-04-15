@@ -1,3 +1,5 @@
+use crate::config::Config;
+use crate::utils::get_preferable_os;
 use libpobsd::{
     parser::{Store, StoreLink},
     Game,
@@ -24,15 +26,20 @@ fn get_steam_store(game: &Game) -> &StoreLink {
         _ => unreachable!(),
     }
 }
-fn game_to_string(game: &Game) -> String {
+fn game_to_string(game: &Game, config: &Config) -> String {
     let store = get_steam_store(game);
     let id = store.id.unwrap();
     let mut to_display: Vec<String> = Vec::new();
     to_display.push(game.name.to_string());
+    let path = match &config.download_path {
+        Some(path) => path.to_string_lossy().into_owned(),
+        None => "<PATH>".to_string(),
+    };
     to_display.push(format!(
-        "Install: steamctl depot download -a {} -o <PATH> -os {}",
+        "Install: steamctl depot download -a {} -o {} -os {}",
         id,
-        crate::steam::get_preferable_os(game.uid)
+        path,
+        get_preferable_os(game.uid)
     ));
     match &game.hints {
         Some(hints) => to_display.push(format!("hint: {}", hints)),
@@ -51,9 +58,9 @@ fn game_to_string(game: &Game) -> String {
 }
 
 // Displaying the games
-pub(crate) fn display_game_list(game_list: Vec<Game>) {
+pub(crate) fn display_game_list(game_list: Vec<Game>, config: &Config) {
     for game in game_list {
-        let game_display = game_to_string(&game);
+        let game_display = game_to_string(&game, config);
         println!(
             "-----------------------------------------\n{}",
             game_display

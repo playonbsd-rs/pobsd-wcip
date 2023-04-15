@@ -1,3 +1,4 @@
+use crate::config::Config;
 use crate::ls::display_game_list;
 use crate::tui::browse;
 use clap::Command;
@@ -13,10 +14,10 @@ fn cli() -> Command {
         .subcommand(Command::new("tui").about("Browse owned games running on OpenBSD"))
 }
 
-pub fn run(game_list: Vec<Game>) -> Result<(), attohttpc::Error> {
+pub fn run(game_list: Vec<Game>, config: &Config) -> Result<(), attohttpc::Error> {
     let matches = cli().get_matches();
     match matches.subcommand() {
-        Some(("ls", _)) => display_game_list(game_list),
+        Some(("ls", _)) => display_game_list(game_list, config),
         Some(("tui", _)) => browse(game_list)?,
         _ => println!("Unsupported command"),
     }

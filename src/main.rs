@@ -1,14 +1,14 @@
 mod config;
 mod database;
 mod ls;
-mod steam;
+mod utils;
 
 #[macro_use]
 extern crate lazy_static;
 
 use crate::config::Config;
 use crate::database::get_game_db;
-use crate::steam::get_steam_games;
+use crate::utils::get_steam_games;
 use pledge::pledge_promises;
 use std::boxed::Box;
 use std::error;
@@ -48,11 +48,11 @@ fn main() -> Result<(), Box<dyn error::Error>> {
 
     // TUI feature
     #[cfg(feature = "tui")]
-    tui_launcher::run(game_list)?;
+    tui_launcher::run(game_list, &config)?;
 
     // Without TUI feature
     #[cfg(not(feature = "tui"))]
-    display_game_list(game_list);
+    display_game_list(game_list, &config);
 
     Ok(())
 }
