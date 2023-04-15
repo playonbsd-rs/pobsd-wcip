@@ -14,6 +14,11 @@ use self::os_lookup_table::GAMETOOS;
 pub fn get_preferable_os(game: &Game) -> String {
     match GAMETOOS.get(&game.uid) {
         Some(oss) => {
+            if let Some(engine) = &game.engine {
+                if engine.eq_ignore_ascii_case("ags") {
+                    return String::from("win");
+                }
+            }
             if oss.contains(&"linux") {
                 String::from("linux")
             } else if oss.contains(&"win") {
