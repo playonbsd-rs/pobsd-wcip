@@ -88,8 +88,9 @@ mod tests {
     }
     #[test]
     fn test_game_to_string() {
+        let config = crate::config::Config::default();
         let game = get_test_game();
-        let disp = game_to_string(&game);
+        let disp = game_to_string(&game, &config);
         let exp = "\
         Super Game\n\
         Install: steamctl depot download -a 1965800 -o <PATH> -os any\n\
