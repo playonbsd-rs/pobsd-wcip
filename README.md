@@ -20,8 +20,28 @@ OPENSSL_INCLUDE_DIR=/usr/local/include/eopenssl11/
 
 Then, make sure you have `$HOME/.cargo/bin` in your `$PATH`
 
+### Configuration
+The configuraiton file for `wcip` is located at `$HOME/.config/wcip/config.toml`.
+
+```toml
+download_path = "/some/absolute_path/"
+steam_id = "not_secre"
+steam_key = "super_secret"
+```
+
+The three parameters are all optionals.
+
+If `download_path` is set, it will be used instead of the `<PATH>` 
+placeholder in the install command.
+
+If `steam_id` and `steam_key` are both set, `wcip` will use the Steam
+Web API instead of steamctl to get the list of owned games. Otherwise,
+you need to configure `steamctl`.
+
 ### How to use it
-First, you need to configure `steamctl`. Once it is done, it is as simple as:
+`wcip` provides two subcommands: `ls` and `tui`.
+
+The `ls` subcommand lists of owned games running on OpenBSD in the terminal:
 ```
 $ wcip  
 Loading steam data. Please wait.
@@ -55,5 +75,42 @@ Loading steam data. Please wait.
  url: https://store.steampowered.com/app/252370
 ------------------------------------
 ```
-The information provided for each game should be enough
-to run it without much trouble.
+
+The `tui` subcommand give a TUI to browse owned games running on OpenBSD in the terminal:
+```
+╭Games────────────────────────────────────────────────────────────────╮╭Details──────────────────────────────────────────────────────────────╮
+│ ╭ Search ─────────────────────────────────────────────────────────╮ ││ DREAMS IN THE WITCH HOUSE                                           │
+│ │                                                                 │ ││                                                                     │
+│ ╰─────────────────────────────────────────────────────────────────╯ ││ Engine: AGS                                                         │
+│ The Blackwell Epiphany                                              ││ Runtime: scummvm                                                    │
+│ Dreams in the Witch House                                           ││ Stores:                                                             │
+│ The Excavation of Hob's Barrow                                      ││ - https://www.gog.com/en/game/dreams_in_the_witch_house             │
+│ Gemini Rue                                                          ││ - https://store.steampowered.com/app/1902850/Dreams_in_the_Witch_Ho │
+│ Northgard                                                           ││ Hints: with scummvm 2.7.0 has segfault when looking down platform i │
+│ Primordia                                                           ││ Year: 2023                                                          │
+│ The Shivah                                                          ││ Developer: Atom Brain Games                                         │
+│ Strangeland                                                         ││ Publisher: Bonus Stage Publishing                                   │
+│ Technobabylon                                                       ││ Version: 1.04                                                       │
+│ Unavowed                                                            ││ Status: runs with rare bugs, unclear if game breaking (2023-03-05)  │
+│                                                                     ││ Added: 2023-03-05                                                   │
+│                                                                     ││ Last updated: 2023-03-05                                            │
+│                                                                     ││                                                                     │
+│                                                                     ││                                                                     │
+│                                                                     ││ ┏GENRES━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓ │
+│                                                                     ││ ┃point and click adventure                                        ┃ │
+│                                                                     ││ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+│                                                                     ││ ┏TAGS━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓ │
+│                                                                     ││ ┃horror Lovecraftian                                              ┃ │
+│                                                                     ││ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
+│                                                                     ││                                                                     │
+│                                                                     ││ Key bindings                                                        │
+│                                                                     ││ s:    Search mode                                                   │
+│                                                                     ││ TAB:  On search mode, change search mode (name/tag/genre)           │
+│                                                                     ││ ESC:  On search mode, back to list mode                             │
+│                                                                     ││ UP:   Previous on the list                                          │
+│                                                                     ││ DOWN: Next on the list                                              │
+│                                                                     ││ k:    On list mode, previous on the list                            │
+│                                                                     ││ j:    On list mode, next on the list                                │
+│                                                                     ││ q:    On list mode, exit                                            │
+╰─────────────────────────────────────────────────────────────────────╯╰─────────────────────────────────────────────────────────────────────╯
+```
