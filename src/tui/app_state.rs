@@ -1,6 +1,5 @@
 use crossterm::event::{Event, Event::Key, KeyCode};
-use pobsd_db::GameDataBase;
-use pobsd_parser::Game;
+use libpobsd::{Game, GameDataBase};
 use tui::widgets::ListState;
 
 pub(crate) enum AppStatus {
@@ -87,11 +86,11 @@ impl AppState {
                     .into_inner(),
                 SearchMode::Tag => self
                     .game_db
-                    .search_game_by_tags(&self.search_text)
+                    .search_game_by_tag(&self.search_text)
                     .into_inner(),
                 SearchMode::Genre => self
                     .game_db
-                    .search_game_by_genres(&self.search_text)
+                    .search_game_by_genre(&self.search_text)
                     .into_inner(),
             },
             _ => unreachable!(),

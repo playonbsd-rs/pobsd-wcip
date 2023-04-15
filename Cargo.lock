@@ -540,6 +540,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "99227334921fae1a979cf0bfdfcc6b3e5ce376ef57e16fb6fb3ea2ed6095f80c"
 
 [[package]]
+name = "libpobsd"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e8bd4aa95b13e39003036ba6d770456da7be99c5830e9d548e6cd137ee05de64"
+dependencies = [
+ "hash32",
+ "paste",
+ "regex",
+ "serde",
+ "serde_derive",
+ "serde_json",
+]
+
+[[package]]
 name = "linked-hash-map"
 version = "0.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -790,30 +804,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "252599417b7d9a43b7fdc63dd790b0848666a8910b2ebe1a25118309c3c981e5"
 dependencies = [
  "libc",
-]
-
-[[package]]
-name = "pobsd-db"
-version = "0.1.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3aeb51abb94e815530d8f323467989f2ce95e401f9aca1064ff8ed22b31ad98f"
-dependencies = [
- "hash32",
- "paste",
- "pobsd-parser",
-]
-
-[[package]]
-name = "pobsd-parser"
-version = "0.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "57e97681775cb14de0dadb365d2ca0e64c03178e311567a581eee068784ba4cb"
-dependencies = [
- "hash32",
- "regex",
- "serde",
- "serde_derive",
- "serde_json",
 ]
 
 [[package]]
@@ -1268,9 +1258,8 @@ dependencies = [
  "crossterm 0.26.1",
  "directories",
  "lazy_static",
+ "libpobsd",
  "pledge",
- "pobsd-db",
- "pobsd-parser",
  "serde",
  "serde_json",
  "toml 0.7.3",

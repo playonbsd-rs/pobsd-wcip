@@ -1,4 +1,7 @@
-use pobsd_parser::{Game, Store, StoreLink};
+use libpobsd::{
+    parser::{Store, StoreLink},
+    Game,
+};
 
 fn get_steam_store(game: &Game) -> &StoreLink {
     match &game.stores {

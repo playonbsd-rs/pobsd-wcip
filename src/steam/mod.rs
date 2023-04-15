@@ -7,8 +7,7 @@ use self::steamctl::get_steam_ids_from_steamctl;
 use crate::config::Config;
 
 use ::std::error;
-use pobsd_db::GameDataBase;
-use pobsd_parser::Game;
+use libpobsd::{Game, GameDataBase};
 
 use self::os_lookup_table::GAMETOOS;
 

@@ -1,7 +1,7 @@
 use crate::ls::display_game_list;
 use crate::tui::browse;
 use clap::Command;
-use pobsd_parser::Game;
+use libpobsd::Game;
 
 fn cli() -> Command {
     Command::new("wcip")

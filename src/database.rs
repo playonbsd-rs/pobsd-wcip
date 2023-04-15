@@ -1,5 +1,4 @@
-use pobsd_db::GameDataBase;
-use pobsd_parser::{Parser, ParserResult};
+use libpobsd::{GameDataBase, Parser, ParserResult};
 
 static DB_URL: &str =
     "https://raw.githubusercontent.com/playonbsd/OpenBSD-Games-Database/main/openbsd-games.db";

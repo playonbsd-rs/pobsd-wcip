@@ -2,7 +2,7 @@ use tui::style::{Modifier, Style};
 use tui::text::{Span, Spans};
 use tui::widgets::{Block, BorderType, Borders, Paragraph};
 
-use pobsd_parser::Game;
+use libpobsd::Game;
 
 pub fn display_game(game: &Game) -> (Paragraph, Paragraph, Paragraph) {
     let mut res: Vec<Spans> = Vec::new();
@@ -44,11 +44,11 @@ pub fn display_game(game: &Game) -> (Paragraph, Paragraph, Paragraph) {
     if let Some(year) = &game.year {
         res.push(format_single("Year".to_string(), year.to_string()));
     }
-    if let Some(dev) = &game.dev {
-        res.push(format_single("Developer".to_string(), dev.to_string()));
+    if let Some(devs) = &game.devs {
+        res.push(format_single("Developer".to_string(), devs.join(", ")));
     }
-    if let Some(publi) = &game.publi {
-        res.push(format_single("Publisher".to_string(), publi.to_string()));
+    if let Some(publis) = &game.publis {
+        res.push(format_single("Publisher".to_string(), publis.join(", ")));
     }
     if let Some(version) = &game.version {
         res.push(format_single("Version".to_string(), version.to_string()));

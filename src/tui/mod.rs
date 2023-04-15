@@ -1,13 +1,11 @@
 mod app_state;
 mod game_details;
 
-use crossterm::event::{DisableMouseCapture, EnableMouseCapture};
 use crossterm::terminal::{
     disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen,
 };
 use crossterm::{event, execute};
-use pobsd_db::GameDataBase;
-use pobsd_parser::Game;
+use libpobsd::{Game, GameDataBase};
 use tui::backend::{Backend, CrosstermBackend};
 use tui::layout::{Constraint, Direction, Layout, Rect};
 use tui::style::{Color, Modifier, Style};
@@ -43,11 +41,7 @@ pub fn browse(games: Vec<Game>) -> Result<(), std::io::Error> {
 
     let result = run_app(&mut terminal, &mut app_state);
 
-    execute!(
-        terminal.backend_mut(),
-        LeaveAlternateScreen,
-        DisableMouseCapture
-    )?;
+    execute!(terminal.backend_mut(), LeaveAlternateScreen,)?;
     disable_raw_mode()?;
 
     if let Err(e) = result {
