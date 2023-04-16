@@ -11,7 +11,7 @@ readme = "README.md"
 keywords = ["OpenBSD", "PlayOnBSD"]
 
 [dependencies]
-libpobsd = "0.1.0"
+libpobsd = "0.1.1"
 attohttpc = "0.24.1"
 pledge = "0.4.1"
 lazy_static = "1.4.0"
