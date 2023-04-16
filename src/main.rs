@@ -36,10 +36,6 @@ fn main() -> Result<(), Box<dyn error::Error>> {
     // When called, drop Exec and Proc pledge promises
     let game_list = get_steam_games(db, &config)?;
 
-    pledge_promises![Tty Stdio]
-        .or_else(pledge::Error::ignore_platform)
-        .unwrap();
-
     // TUI feature
     launcher::run(game_list, &config)?;
 
