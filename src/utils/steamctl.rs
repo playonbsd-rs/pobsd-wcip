@@ -1,16 +1,44 @@
 use ::std::error;
-use pledge::pledge_promises;
+use std::path::PathBuf;
 use std::process::Command;
 
 static STEAM_CTL: &str = "/usr/local/bin/steamctl";
 
-fn get_steamctl_output() -> Result<String, Box<dyn error::Error>> {
+#[allow(dead_code)]
+pub(crate) fn download_steam_game(
+    password: &Option<String>,
+    path: &PathBuf,
+    steam_id: &str,
+) -> Result<String, Box<dyn error::Error>> {
+    // grab steamctl output
+    let output = match password {
+        Some(password) => Command::new(STEAM_CTL)
+            .arg("depot")
+            .arg("dowload")
+            .arg(format!("-a {}", steam_id))
+            .arg(format!("-o {}", path.to_string_lossy()))
+            .arg(format!("-p {}", password))
+            .output()?,
+        // Should prompt for steam password in that case
+        // or better hope the bug in steamctl is quickly
+        // fixed.
+        // To deal with this case later.
+        None => Command::new(STEAM_CTL).arg("apps").arg("list").output()?,
+    };
+    // convert the output to valid UTF-8
+    let output = std::str::from_utf8(&output.stdout)?.to_string();
+    Ok(output)
+}
+
+fn get_steamctl_output(password: &Option<String>) -> Result<String, Box<dyn error::Error>> {
     eprintln!("Loading steam data. Please wait.");
-    // grap steamctl output
-    let output = Command::new(STEAM_CTL).arg("apps").arg("list").output()?;
-    pledge_promises![Tty Stdio Rpath Inet Dns]
-        .or_else(pledge::Error::ignore_platform)
-        .unwrap();
+    // grab steamctl output
+    let output = match password {
+        // At least for now, password is not available for the apps list subcommand
+        // So the command is the same in both cases.
+        Some(_password) => Command::new(STEAM_CTL).arg("apps").arg("list").output()?,
+        None => Command::new(STEAM_CTL).arg("apps").arg("list").output()?,
+    };
     // convert the output to valid UTF-8
     let output = std::str::from_utf8(&output.stdout)?.to_string();
     Ok(output)
@@ -30,8 +58,10 @@ fn get_ids_from_output(output: String) -> Vec<usize> {
     ids
 }
 
-pub fn get_steam_ids_from_steamctl() -> Result<Vec<usize>, Box<dyn error::Error>> {
-    let output = get_steamctl_output()?;
+pub fn get_steam_ids_from_steamctl(
+    password: &Option<String>,
+) -> Result<Vec<usize>, Box<dyn error::Error>> {
+    let output = get_steamctl_output(password)?;
     let ids = get_ids_from_output(output);
     Ok(ids)
 }

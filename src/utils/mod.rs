@@ -41,9 +41,9 @@ pub(crate) fn get_steam_games(
         // are set
         Some(steam_id) => match &config.steam_key {
             Some(steam_key) => get_steam_ids_from_webapi(steam_id, steam_key)?,
-            None => get_steam_ids_from_steamctl()?,
+            None => get_steam_ids_from_steamctl(&config.steam_password)?,
         },
-        None => get_steam_ids_from_steamctl()?,
+        None => get_steam_ids_from_steamctl(&config.steam_password)?,
     };
     for id in ids {
         if let Some(game) = db.get_game_by_steam_id(id) {
