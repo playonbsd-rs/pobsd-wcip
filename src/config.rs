@@ -7,6 +7,7 @@ pub struct Config {
     pub download_path: Option<PathBuf>,
     pub steam_id: Option<String>,
     pub steam_key: Option<String>,
+    pub steam_password: Option<String>,
 }
 
 fn get_config_file_path() -> Option<PathBuf> {
