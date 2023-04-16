@@ -186,6 +186,9 @@ mod test_app_states {
         app_state.search_text = "Aaa".to_string();
         assert_eq!(app_state.search_list()[0], &games[0]);
         assert_eq!(app_state.search_list().len(), 1);
+        app_state.search_text = "aAA".to_string();
+        assert_eq!(app_state.search_list()[0], &games[0]);
+        assert_eq!(app_state.search_list().len(), 1);
         app_state.search_text = "does not exist".to_string();
         assert_eq!(app_state.search_list().len(), 0);
     }

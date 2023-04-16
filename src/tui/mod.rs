@@ -156,11 +156,11 @@ fn list_section<B: Backend>(f: &mut Frame<B>, state: &mut AppState, area: Rect) 
 
     let search_title = match &state.mode {
         InputMode::Search(search_mode) => match search_mode {
-            SearchMode::Name => " Search by name ",
-            SearchMode::Tag => " Search by tag ",
-            SearchMode::Genre => " Search by genre ",
+            SearchMode::Name => "Search by name ",
+            SearchMode::Tag => "Search by tag ",
+            SearchMode::Genre => "Search by genre ",
         },
-        _ => " Search ",
+        _ => "Search ",
     };
     let search_input = Paragraph::new(state.search_text.to_owned())
         .block(
