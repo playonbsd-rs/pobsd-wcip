@@ -49,7 +49,8 @@ mod tests {
         String::from(
             "download_path = \"test\"\n
         steam_id = \"123\"\n
-        steam_key = \"456\"",
+        steam_key = \"456\"\n
+        steam_password = \"secret\"",
         )
     }
     #[test]
@@ -59,6 +60,7 @@ mod tests {
             steam_id: Some("123".to_string()),
             steam_key: Some("456".to_string()),
             download_path: Some(PathBuf::from("test")),
+            steam_password: Some("secret".to_string()),
         };
         let conf = content_to_config(content).unwrap();
         assert_eq!(conf, exp);
