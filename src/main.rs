@@ -13,9 +13,9 @@ use pledge::pledge_promises;
 use std::boxed::Box;
 use std::error;
 
+mod launcher;
 // TUI feature
 mod tui;
-mod tui_launcher;
 
 fn main() -> Result<(), Box<dyn error::Error>> {
     // Set config to default if the config file
@@ -41,7 +41,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
         .unwrap();
 
     // TUI feature
-    tui_launcher::run(game_list, &config)?;
+    launcher::run(game_list, &config)?;
 
     Ok(())
 }
